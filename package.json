@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "@sapphire/framework": "^5.3.1",
+    "@sapphire/plugin-subcommands": "^7.0.1",
+    "@sapphire/utilities": "^3.18.1",
+    "date-fns": "^4.1.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.7",
+    "node-cron": "^3.0.3",
+    "pnwkit-2.0": "^1.5.51",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.20"
+  },
+  "name": "warden",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/node-cron": "^3.0.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "scripts": {
+    "typeorm": "typeorm-ts-node-commonjs -d src/utils/database.ts",
+    "migration:generate": "npm run typeorm -- migration:generate src/migrations/",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
