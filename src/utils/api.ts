@@ -10,6 +10,8 @@ export default class API {
         const nation = await pnwkit.nationQuery({ id: [nationId], first: 1 },
             `
             id
+            nation_name
+            discord
             last_active
             `
         );

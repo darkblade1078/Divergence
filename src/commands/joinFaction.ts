@@ -46,6 +46,7 @@ export class JoinFactionCommand extends Command {
         totalPoints: 0,
         points: [],
         faction: faction,
+        loggedIn: false
       });
     
       await memberRepository.save(newMember);
@@ -60,6 +61,7 @@ export class JoinFactionCommand extends Command {
       await memberRoles.add(role);
     }
     catch(err) {
+      console.log(err)
       return interaction.editReply({ embeds: [embeds.errorEmbed(`Failed to join faction`)]});
     }
 

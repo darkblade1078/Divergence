@@ -77,10 +77,8 @@ export default class embedGenerator {
         .setFooter({ text: `Powered by ${this.client.user?.username}`, iconURL: this.client.user?.avatarURL()! });
 
         for(let i = 0; i < length; i++) {
-            let discordMember = interaction.guild?.members.cache.get(members[i].discordId);
             let emoji = members[i].emoji != '' &&  members[i].emoji != null ? members[i].emoji : `(**${members[i].faction}**)`;
-
-            description += `**${i + 1}.** ${discordMember?.user.username}: ${members[i].points} ${emoji}\n`;
+            description += `**${i + 1}.** <@${members[i].discordId}>: ${members[i].points} ${emoji}\n`;
         }
 
         embed.setDescription(description);
@@ -99,8 +97,8 @@ export default class embedGenerator {
         .setFooter({ text: `Powered by ${this.client.user?.username}`, iconURL: this.client.user?.avatarURL()! });
 
         for(let i = 0; i < length; i++) {
-            let emoji = factions[i].emoji != '' && factions[i].emoji != null ? factions[i].emoji : `${factions[i].name}:`;
-            description += `**${i + 1}.** ${emoji} ${factions[i].totalPoints}\n`;
+            let emoji = factions[i].emoji != '' && factions[i].emoji != null ? `(${factions[i].emoji})` : ``;
+            description += `**${i + 1}.** ${factions[i].name} ${emoji} ${factions[i].totalPoints}\n`;
         }
 
         embed.setDescription(description);
@@ -111,7 +109,7 @@ export default class embedGenerator {
     factionEmbed(faction: Faction): EmbedBuilder {
 
         const totalPoints = faction.members.reduce((memberSum, point) => memberSum + point.totalPoints, 0);
-        const leaderId = faction.leaderId != '' && faction.leaderId != null ? `<${faction.leaderId}@>` : 'none';
+        const leader = faction.leaderId != '' && faction.leaderId != null ? `<@${faction.leaderId}>` : 'none';
 
         const embed = new EmbedBuilder()
         .setTitle(faction.name)
@@ -122,7 +120,7 @@ export default class embedGenerator {
                 {
                     name: 'Stats',
                     value: `
-                    **Leader:** ${leaderId}
+                    **Leader:** ${leader}
                     **Total Points:** ${totalPoints.toLocaleString('en-US')}
                     **Avg Points:** ${(totalPoints / faction.members.length).toLocaleString('en-US')}
                     **Members:** ${faction.members.length}

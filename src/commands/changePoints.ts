@@ -8,7 +8,7 @@ export class ChangePointsCommand extends Command {
   public constructor(context: Command.LoaderContext, options: Command.Options) {
     super(context, { 
       ...options, 
-      preconditions: ['adminOnly']
+      preconditions: ['factionRole']
     });
   }
 
@@ -23,8 +23,11 @@ export class ChangePointsCommand extends Command {
     const logRepository = database.getRepository(Log);
     const embeds = new embedGenerator(client);
 
-    const member = await memberRepository.findOneBy({
-        discordId: user.id
+    const member = await memberRepository.findOne({
+        where: {
+          discordId: user.id,
+        },
+        relations: ['points']
     });
 
     if(!member)
@@ -37,13 +40,11 @@ export class ChangePointsCommand extends Command {
 
     await pointsRepository.save(newPoint);
 
-    member.totalPoints += points;
-
-    if(!member.points)
+    if (!member.points)
       member.points = [];
-
+    
+    member.totalPoints += points;
     member.points.push(newPoint);
-
     await memberRepository.save(member);
 
     const newLog = logRepository.create({

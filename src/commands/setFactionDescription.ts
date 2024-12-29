@@ -3,7 +3,7 @@ import embedGenerator from "../utils/embeds";
 import Log from "../entities/log";
 import Faction from "../entities/faction";
 
-export class SetFactionEmojiCommand extends Command {
+export class SetFactionDescriptionCommand extends Command {
   public constructor(context: Command.LoaderContext, options: Command.Options) {
     super(context, { 
       ...options, 
@@ -16,7 +16,7 @@ export class SetFactionEmojiCommand extends Command {
 
     const { client, database } = this.container;
     const name = interaction.options.getString('name', true);
-    const emoji = interaction.options.getString('emoji', true);
+    const description = interaction.options.getString('description', true);
     const logRepository = database.getRepository(Log);
     const factionDatabase = database.getRepository(Faction);
     const embeds = new embedGenerator(client);
@@ -30,42 +30,36 @@ export class SetFactionEmojiCommand extends Command {
     if(!faction)
       return interaction.editReply({ embeds: [embeds.errorEmbed(`Faction does not exist`)]});
 
-    const unicodeEmojiRegex =/(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/gu.test(emoji);
-    const customEmojiRegex = /^<a?:\w+:\d+>$/.test(emoji);
-
-    if(!customEmojiRegex && !unicodeEmojiRegex)
-      return interaction.editReply({ embeds: [embeds.errorEmbed(`Inputted text is not an emoji`)]});
-
-    faction.emoji = emoji;
+    faction.description = description;
 
     await factionDatabase.save(faction);
 
     const newLog = logRepository.create({
         date: new Date(),
-        action: `${interaction.user.username} set the emoji of ${faction?.name} to ${faction?.emoji}`
+        action: `${interaction.user.username} set the description of ${faction?.name}`
     });
   
     await logRepository.save(newLog);
 
-    return interaction.editReply({ embeds: [embeds.successEmbed(`Emoji Set`, `Set the emoji of ${faction?.name} to ${faction?.emoji}`)] });
+    return interaction.editReply({ embeds: [embeds.successEmbed(`Description Set`, `Set the description of ${faction?.name}`)] });
   }
 
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('set_faction_emoji')
-        .setDescription('Set an emoji for a faction')
+        .setName('set_faction_description')
+        .setDescription('Set an description for a faction')
         .addStringOption(option =>
           option
           .setName('name')
-          .setDescription('The name of the faction you want to set the emoji for')
+          .setDescription('The name of the faction you want to set the description for')
           .setAutocomplete(true)
           .setRequired(true)
         )
         .addStringOption(option =>
             option
-            .setName('emoji')
-            .setDescription('The emoji you want to set for the faction')
+            .setName('description')
+            .setDescription('The description you want to set for the faction')
             .setRequired(true)
         )
     );

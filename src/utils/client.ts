@@ -40,12 +40,14 @@ declare module '@sapphire/pieces' {
 declare module '@sapphire/framework' {
   interface Preconditions {
     adminOnly: never;
-    houseLeaderOnly: never;
+    factionRole: never;
   }
 }
 
 const task = cron.schedule('0 0 * * *', () =>  {
   container.database.getRepository(Member).update({}, { loggedIn: false });
+  
 }, {
-  scheduled: false
+  scheduled: false,
+  timezone: "UTC"
 });

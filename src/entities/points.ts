@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import Member from "./member"
 
 @Entity()
@@ -13,5 +13,6 @@ export default class Points {
     created!: Date;
 
     @ManyToOne(() => Member, (member) => member.points, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "memberId" })
     member!: Member;
 }

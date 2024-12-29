@@ -43,7 +43,7 @@ export class SetLeaderCommand extends Command {
     if(member.faction.name != faction.name)
         return interaction.editReply({ embeds: [embeds.errorEmbed(`User is not in ${faction.name}`)]});
     
-    faction.leaderId == user.id;
+    faction.leaderId = user.id;
 
     await factionRepository.save(faction);
 

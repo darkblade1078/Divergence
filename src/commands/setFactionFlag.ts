@@ -7,6 +7,7 @@ export class SetFactionFlagCommand extends Command {
   public constructor(context: Command.LoaderContext, options: Command.Options) {
     super(context, { 
       ...options, 
+      preconditions: ['adminOnly'] 
     });
   }
 

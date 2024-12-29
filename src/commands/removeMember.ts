@@ -2,12 +2,12 @@ import { Command } from "@sapphire/framework";
 import embedGenerator from "../utils/embeds";
 import Member from "../entities/member";
 import Log from "../entities/log";
-import Faction from "../entities/faction";
 
 export class RemoveMemberCommand extends Command {
   public constructor(context: Command.LoaderContext, options: Command.Options) {
     super(context, { 
       ...options, 
+      preconditions: ['factionRole']
     });
   }
 
@@ -18,17 +18,7 @@ export class RemoveMemberCommand extends Command {
     const user = interaction.options.getUser('user', true);
     const memberRepository = database.getRepository(Member);
     const logRepository = database.getRepository(Log);
-    const factionDatabase = database.getRepository(Faction);
     const embeds = new embedGenerator(client);
-
-    const faction = await factionDatabase.findOne({
-        where: {
-            leaderId: interaction.user.id
-        }
-    });
-
-    if(!faction)
-      return interaction.editReply({ embeds: [embeds.errorEmbed(`Only faction leaders can use this command`)]});
 
     const member = await memberRepository.findOne({
         where: {
@@ -40,19 +30,24 @@ export class RemoveMemberCommand extends Command {
     if(!member)
       return interaction.editReply({ embeds: [embeds.errorEmbed(`Member is not in a faction`)]});
 
-    if(member.faction.name != faction.name)
-      return interaction.editReply({ embeds: [embeds.errorEmbed(`Member is not in your faction`)]});
+    if(member.faction.roleId != null) {
 
-    await memberRepository.delete(member);
+      const discordMember = interaction.guild?.members.cache.get(user.id);
+
+      if(discordMember?.roles.cache.has(member.faction.roleId))
+        await discordMember.roles.remove(member.faction.roleId);
+    }
+
+    await memberRepository.remove(member);
 
     const newLog = logRepository.create({
         date: new Date(),
-        action: `${interaction.user.username} removed ${user.username} from ${faction.name}`
+        action: `${interaction.user.username} removed ${user.username} from ${member.faction.name}`
     });
   
     await logRepository.save(newLog);
 
-    return interaction.editReply({ embeds: [embeds.successEmbed(`Removed ${user.username}`, `User ${user.username}, has been removed from your faction`)] });
+    return interaction.editReply({ embeds: [embeds.successEmbed(`Removed ${user.username}`, `User ${user.username} has been removed from ${member.faction.name}`)] });
   }
 
   public override registerApplicationCommands(registry: Command.Registry) {

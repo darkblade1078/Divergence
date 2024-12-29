@@ -18,7 +18,7 @@ export default class Member {
     @Column({
         nullable: true
     })
-    pnwID?: number
+    pnwID?: string
 
     @OneToMany(() => Points, (points) => points.member)
     points!: Points[];
